@@ -34,8 +34,6 @@ const int JINGLE_BELLS         = 1;
 const int SILENT_NIGHT         = 2;
 const int DING_DONG            = 3;
 
-int bluetooth_connected = 0;
-
 int ripples[4][25] = {
     {0,0,0,0,0,  0,0,0,0,0,  0,0,0,0,0,  0,0,0,0,0,  0,0,0,0,0}, 
     {0,0,0,0,0,  0,0,0,0,0,  0,0,1,0,0,  0,0,0,0,0,  0,0,0,0,0}, 
@@ -405,47 +403,12 @@ void onControllerEvent(MicroBitEvent e)
     }
 }
 
-void onButton(MicroBitEvent e)
-{
-    // "emergency stop" - no need to dig out your phone and connect just to stop the music from annoying people!
-    // Either  button will stop both sound and animation
-    printf("onButton\n");
-    if (e.source == MICROBIT_ID_BUTTON_A || e.source == MICROBIT_ID_BUTTON_B) {
-        // stop current light and/or audio
-        selected_light_seq = STOP;
-        selected_audio_seq = STOP;
-        uBit.display.stopAnimation();
-        uint16_t stopped = (STOP << 8) + STOP;
-        printf("raising state report event: %d\n",stopped);
-        MicroBitEvent(STATE_REPORT, stopped);
-        return;
-    }
-}
-
-void onConnected(MicroBitEvent)
-{
-    printf("onConnected\n");
-    uBit.display.stopAnimation();
-    uBit.display.print("C");
-    bluetooth_connected = 1;
-}
-
-void onDisconnected(MicroBitEvent)
-{
-    printf("onDisconnected\n");
-    bluetooth_connected = 0;
-}
-
 int main()
 {
     uBit.init();
     uBit.seedRandom();
     calculateNoteDuration();
 //    printf("N64_duration_ms=%d\n\n",N64_duration_ms);
-    uBit.messageBus.listen(MICROBIT_ID_BLE, MICROBIT_BLE_EVT_CONNECTED, onConnected);
-    uBit.messageBus.listen(MICROBIT_ID_BLE, MICROBIT_BLE_EVT_DISCONNECTED, onDisconnected);
-    uBit.messageBus.listen(MICROBIT_ID_BUTTON_A, MICROBIT_BUTTON_EVT_CLICK, onButton);
-    uBit.messageBus.listen(MICROBIT_ID_BUTTON_B, MICROBIT_BUTTON_EVT_CLICK, onButton);
     uBit.messageBus.listen(BEHAVIOUR_CONTROL, 0, onControllerEvent); 
     uBit.messageBus.listen(STATE_QUERY, 0, onControllerEvent); 
 
