@@ -176,7 +176,7 @@ void audioOff() {
 }
 
 void playTune(const int tune_data[][2]) {
-    printf("play_tune\n");
+    // printf("play_tune\n");
     calculateNoteDuration();
     int i=0;
     while (tune_data[i][0] != TUNE_END) {
@@ -184,7 +184,7 @@ void playTune(const int tune_data[][2]) {
             return;
         } 
         int duration = N64_duration_ms * tune_data[i][1];
-//        printf("duration=%d\n\n",duration);
+//        // printf("duration=%d\n\n",duration);
         if (tune_data[i][0] != RE) {
             playTone(tune_data[i][0] , duration);
         } else {
@@ -274,29 +274,29 @@ void stopLight() {
 }
 
 void audioLoop() {
-    printf("audioLoop\n\n");
+    // printf("audioLoop\n\n");
     while (audio_on == 1) {
        switch (selected_audio_seq) {
          case STOP:
-           printf("audioLoop.STOP\n");
+           // printf("audioLoop.STOP\n");
            audio_on = 0;
            break;
          case JINGLE_BELLS:
-           printf("audioLoop.JINGLE_BELLS\n");
+           // printf("audioLoop.JINGLE_BELLS\n");
            audio_on = 1;
            tempo = 120;
            playing_audio_seq = JINGLE_BELLS;
            playTune(jingle_bells);
            break;
          case SILENT_NIGHT:
-           printf("audioLoop.SILENT_NIGHT\n");
+           // printf("audioLoop.SILENT_NIGHT\n");
            audio_on = 1;
            tempo = 120;
            playing_audio_seq = SILENT_NIGHT;
            playTune(silent_night);
            break;
          case DING_DONG:
-           printf("audioLoop.DING_DONG\n");
+           // printf("audioLoop.DING_DONG\n");
            audio_on = 1;
            tempo = 160;
            playing_audio_seq = DING_DONG;
@@ -304,14 +304,14 @@ void audioLoop() {
            break;
        }
     }
-    printf("audioLoop exiting\n");
+    // printf("audioLoop exiting\n");
 }
 
 void animationLoop() {
-    // printf("animationLoop %d\n\n",selected_light_seq);
+    // // printf("animationLoop %d\n\n",selected_light_seq);
     // exit if no animation requested to save power
     while(display_on == 1) {
-       printf("animationLoop continuing %d\n\n",selected_light_seq);
+       // printf("animationLoop continuing %d\n\n",selected_light_seq);
        switch (selected_light_seq) {
          case STOP:
            stopLight();
@@ -344,12 +344,12 @@ void animationLoop() {
        }
        uBit.sleep(sleep_time); 
     }
-    printf("animationLoop exiting\n");
+    // printf("animationLoop exiting\n");
 }
 
 void onControllerEvent(MicroBitEvent e)
 {
-    printf("onControllerEvent %d.%d\n",e.source,e.value);
+    // printf("onControllerEvent %d.%d\n",e.source,e.value);
 
     if ( e.source == STATE_QUERY) {
         // prime the Microbit Event characteristic with the current display/audio values so that they
@@ -364,15 +364,15 @@ void onControllerEvent(MicroBitEvent e)
     // 0 means no change being requested
     const uint8_t audio_sequence = (uint8_t)((e.value & 0xFF00) >> 8);
     const uint8_t light_sequence = (uint8_t)(e.value & 0x00FF);
-	printf("onControllerEvent light=%d audio=%d\n",light_sequence,audio_sequence);
-	printf("onControllerEvent selected_light=%d\n",selected_light_seq);
+	// printf("onControllerEvent light=%d audio=%d\n",light_sequence,audio_sequence);
+	// printf("onControllerEvent selected_light=%d\n",selected_light_seq);
 
     if (light_sequence != 0 && light_sequence != selected_light_seq) {
-        printf("light sequence selected\n");
+        // printf("light sequence selected\n");
         if (display_on == 0) { 
             display_on = 1;
             // we only create the animation loop if an animation has been requested (to save power)
-            printf("starting animation loop\n");
+            // printf("starting animation loop\n");
             create_fiber(animationLoop);
         }
         sleep_time = 1000;
@@ -408,7 +408,7 @@ int main()
     uBit.init();
     uBit.seedRandom();
     calculateNoteDuration();
-//    printf("N64_duration_ms=%d\n\n",N64_duration_ms);
+//    // printf("N64_duration_ms=%d\n\n",N64_duration_ms);
     uBit.messageBus.listen(BEHAVIOUR_CONTROL, 0, onControllerEvent); 
     uBit.messageBus.listen(STATE_QUERY, 0, onControllerEvent); 
 
